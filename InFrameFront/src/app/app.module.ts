@@ -1,8 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule,APP_INITIALIZER } from '@angular/core';
+
+import {  HttpClient, HttpClientModule } from '@angular/common/http';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
+import {ConfigService} from './services/config.service';
+
+
 import { GenericInputComponent } from './components/common/generic-input/generic-input.component';
 
 import { FormsModule } from '@angular/forms';
@@ -28,10 +35,15 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { SpinnerModule } from 'primeng/spinner';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputMaskModule } from 'primeng/inputmask';
-import { HttpClientModule } from '@angular/common/http';
+
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { MenubarModule } from 'primeng/menubar';
+import { TicketService } from './services/ticket.service';
 
+export function initializeApp(configService: ConfigService) {
+  console.log('initializeApp');
+  return ()=>configService.loadConfig() ;
+}
 
 
 @NgModule({
@@ -40,6 +52,7 @@ import { MenubarModule } from 'primeng/menubar';
     GenericInputComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     CheckboxModule,
@@ -62,7 +75,9 @@ import { MenubarModule } from 'primeng/menubar';
     InputTextareaModule,
     MenubarModule,
   ],
-  providers: [],
+  providers: [ConfigService,TicketService,
+    {provide:APP_INITIALIZER,useFactory:initializeApp,deps:[ConfigService],multi:true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
